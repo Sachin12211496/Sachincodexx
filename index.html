@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>SachinCoderX — Premium 3D Batch Showcase</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      future: { hoverOnlyWhenSupported: true },
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              neon: '#84cc16',
+              cyber: '#a3e635'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-primary: #f3f5f8;
+      --bg-panel: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --card-border: rgba(226, 232, 240, 0.9);
+      --card-shadow: 0 14px 34px -8px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      --green-glow: 0 10px 25px -4px rgba(34, 197, 94, 0.45);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html.dark {
+      --bg-primary: #050a07;
+      --bg-panel: #0b150f;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --card-border: rgba(132, 204, 22, 0.24);
+      --card-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.85), 0 0 28px -6px rgba(132, 204, 22, 0.18);
+      --green-glow: 0 10px 30px -2px rgba(132, 204, 22, 0.55);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Cinematic Ambient 3D Background Mesh in Dark Mode */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      transform: translateZ(0);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(132, 204, 22, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(34, 197, 94, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+    }
+    html.dark .ambient-bg {
+      opacity: 1;
+    }
+
+    /* Hide scrollbar for category pills */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* 60FPS GPU-Accelerated 3D Perspective Container & Card Tilt */
+    .perspective-grid {
+      perspective: 1400px;
+    }
+
+    .batch-card-3d {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1.5px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      border-radius: 26px;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translate3d(0, 0, 0);
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      will-change: transform;
+    }
+
+    @media (hover: hover) {
+    .batch-card-3d:hover {
+      border-color: rgba(34, 197, 94, 0.55);
+      box-shadow: 0 24px 48px -12px rgba(34, 197, 94, 0.22), var(--card-shadow);
+    }
+
+    html.dark .batch-card-3d:hover {
+      border-color: rgba(163, 230, 53, 0.75);
+      box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.95), 0 0 36px -4px rgba(132, 204, 22, 0.35);
+    }
+    }
+
+    /* Pinned Favorite Card Special 3D Aura */
+    .batch-card-3d.is-favorite {
+      border-color: rgba(244, 63, 94, 0.65);
+      box-shadow: 0 18px 40px -10px rgba(244, 63, 94, 0.18), var(--card-shadow);
+    }
+    html.dark .batch-card-3d.is-favorite {
+      border-color: rgba(251, 113, 133, 0.8);
+      box-shadow: 0 20px 50px -10px rgba(244, 63, 94, 0.25);
+    }
+
+    /* Enrolled / My Batch Glow */
+    .batch-card-3d.is-enrolled {
+      border-color: rgba(34, 197, 94, 0.65);
+    }
+
+    /* Glossy Specular Highlight Overlay on 3D Cards */
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      pointer-events: none;
+      background: radial-gradient(550px circle at var(--mouse-x, 50%) var(--mouse-y, 0%), rgba(255, 255, 255, 0.14), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      z-index: 20;
+    }
+    @media (hover: hover) {
+    .batch-card-3d:hover .card-glare {
+      opacity: 1;
+    }
+    }
+
+    /* Pop Animation for Heart Button */
+    @keyframes heartPop {
+      0% { transform: scale3d(1, 1, 1); }
+      35% { transform: scale3d(1.38, 1.38, 1) rotate(-8deg); }
+      70% { transform: scale3d(0.92, 0.92, 1) rotate(4deg); }
+      100% { transform: scale3d(1, 1, 1) rotate(0deg); }
+    }
+    .animate-heart-pop {
+      animation: heartPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Shake Animation for Wrong Secret Code */
+    @keyframes modalShake {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      20%, 60% { transform: translate3d(-10px, 0, 0); }
+      40%, 80% { transform: translate3d(10px, 0, 0); }
+    }
+    .animate-shake {
+      animation: modalShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    /* Floating 3D Elements Animation in Banner */
+    @keyframes float3D {
+      0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+      50% { transform: translate3d(0, -7px, 0) rotate(2.5deg); }
+    }
+    .float-slow {
+      animation: float3D 4s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    /* Custom Sky/Sun/Cloud Theme Switch (Exact Match to Screenshot) */
+    .sky-toggle {
+      position: relative;
+      width: 78px;
+      height: 40px;
+      border-radius: 9999px;
+      padding: 4px;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(135deg, #7dd3fc 0%, #bae6fd 55%, #fef9c3 100%);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(14, 165, 233, 0.25);
+      border: 2px solid #e0f2fe;
+      overflow: hidden;
+    }
+    html.dark .sky-toggle {
+      background: linear-gradient(135deg, #062814 0%, #0f172a 60%, #1e293b 100%);
+      border-color: rgba(132, 204, 22, 0.45);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 0 15px rgba(132, 204, 22, 0.25);
+    }
+    .sky-toggle-knob {
+      position: relative;
+      z-index: 10;
+      width: 30px;
+      height: 30px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.35s ease;
+      will-change: transform;
+    }
+    html.dark .sky-toggle-knob {
+      transform: translate3d(36px, 0, 0);
+      background: linear-gradient(135deg, #84cc16 0%, #16a34a 100%);
+      box-shadow: 0 0 14px rgba(132, 204, 22, 0.85);
+    }
+
+    /* 3D Button Press & Glow */
+    .btn-enroll-3d {
+      background: linear-gradient(180deg, #34d399 0%, #22c55e 45%, #16a34a 100%);
+      box-shadow: 0 8px 20px -4px rgba(34, 197, 94, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      transform: translate3d(0, 0, 0);
+    }
+    @media (hover: hover) {
+    .btn-enroll-3d:hover {
+      transform: translate3d(0, -2px, 0);
+      box-shadow: 0 12px 26px -4px rgba(34, 197, 94, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    }
+    }
+    .btn-enroll-3d:active {
+      transform: translate3d(0, 1px, 0);
+    }
+
+    /* Thumbnail Zoom & 3D Depth */
+    .thumb-wrapper {
+      transform: translateZ(16px);
+      backface-visibility: hidden;
+    }
+
+    /* ===== Responsive + Smooth additions ===== */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { min-height: 100vh; min-height: 100dvh; }
+    button, a, input { touch-action: manipulation; }
+    img { max-width: 100%; }
+
+    /* Phones & tablets: lighter rendering for buttery scrolling */
+    @media (max-width: 1023px) {
+      header.backdrop-blur-xl,
+      main > div.backdrop-blur-xl {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+    }
+    @media (max-width: 767px), (hover: none) {
+      .perspective-grid { perspective: none; }
+      .batch-card-3d {
+        transform-style: flat;
+        will-change: auto;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 660px;
+      }
+      .thumb-wrapper { transform: none; }
+      .batch-card-3d .backdrop-blur-md {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+    }
+
+    /* Small phones: fit header + toggle */
+    @media (max-width: 479px) {
+      header .hdr-left { gap: 8px; }
+      header .hdr-link { gap: 8px; }
+      header .hdr-burger { width: 36px; height: 36px; }
+      header .hdr-logo { width: 32px; height: 32px; }
+      header .hdr-brand { font-size: 16px; }
+      header .hdr-right { gap: 6px; }
+      header #headerLockBtn { padding: 8px 10px; }
+      .sky-toggle { width: 66px; height: 34px; padding: 4px; }
+      .sky-toggle-knob { width: 24px; height: 24px; }
+      html.dark .sky-toggle-knob { transform: translate3d(30px, 0, 0); }
+    }
+    @media (max-width: 399px) {
+      header .hdr-mybatches { display: none; }
+    }
+    @media (max-width: 339px) {
+      header .hdr-logo { width: 28px; height: 28px; }
+      header .hdr-brand { font-size: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .float-slow { animation: none; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+  <!-- Ambient 3D Cyber Glow (Dark Mode) -->
+  <div class="ambient-bg"></div>
+
+  <!-- ================= TOP STICKY NAVBAR (Matches Screenshot 2 & 3) ================= -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/90 dark:bg-[#08120c]/90 border-b border-slate-200/80 dark:border-lime-500/20 transition-colors">
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-[72px] flex items-center justify-between gap-2">
+      
+      <!-- Left: Hamburger + 3D Hexagon Logo + Brand Name -->
+      <div class="hdr-left flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <button id="openSidebarBtn" aria-label="Open Menu"
+          class="hdr-burger shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-lime-500/10 active:scale-95 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <!-- Brand Logo Link -->
+        <a href="#" onclick="resetToAllBatches(event)" class="hdr-link flex items-center gap-2.5 group focus:outline-none min-w-0">
+          <!-- Custom 3D Neon Green Hexagon Logo SVG (Matching Image 1) -->
+          <div class="hdr-logo relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 flex items-center justify-center filter drop-shadow-[0_0_8px_rgba(132,204,22,0.55)] group-hover:scale-105 transition-transform">
+            <svg viewBox="0 0 100 100" class="w-full h-full">
+              <defs>
+                <linearGradient id="hexOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#bef264" />
+                  <stop offset="50%" stop-color="#65a30d" />
+                  <stop offset="100%" stop-color="#22c55e" />
+                </linearGradient>
+                <linearGradient id="hexInner" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#142918" />
+                  <stop offset="100%" stop-color="#050d07" />
+                </linearGradient>
+                <linearGradient id="ribbonTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ecfccb" />
+                  <stop offset="40%" stop-color="#a3e635" />
+                  <stop offset="100%" stop-color="#4d7c0f" />
+                </linearGradient>
+                <linearGradient id="ribbonBottom" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#bef264" />
+                  <stop offset="55%" stop-color="#84cc16" />
+                  <stop offset="100%" stop-color="#15803d" />
+                </linearGradient>
+              </defs>
+              <polygon points="50,4 91,27 91,73 50,96 9,73 9,27" fill="url(#hexOuter)" rx="12" />
+              <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="url(#hexInner)" stroke="#a3e635" stroke-width="1.5" />
+              <path d="M50,24 L74,38 L64,54 L50,37 L33,44 L33,54 L28,51 L28,36 Z" fill="url(#ribbonTop)" />
+              <path d="M50,76 L26,62 L36,46 L50,63 L67,56 L67,46 L72,49 L72,64 Z" fill="url(#ribbonBottom)" />
+            </svg>
+          </div>
+
+          <span class="hdr-brand whitespace-nowrap text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            SachinCoder<span class="text-[#22c55e] dark:text-[#a3e635] drop-shadow-[0_0_10px_rgba(132,204,22,0.35)]">X</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Right: Quick My Batches + Lock Status Pill + Sky/Sun Theme Toggle -->
+      <div class="hdr-right flex items-center gap-2 sm:gap-3 shrink-0">
+        <!-- Quick My Batches Pill -->
+        <button onclick="selectCategory('My Batches')"
+          class="hdr-mybatches relative flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-100 dark:bg-lime-950/60 border border-slate-200/80 dark:border-lime-500/30 text-slate-700 dark:text-lime-200 text-xs sm:text-sm font-bold hover:border-brand-500 transition"
+          title="View Saved My Batches">
+          <i class="fa-solid fa-graduation-cap text-brand-600 dark:text-lime-400 text-sm"></i>
+          <span class="hidden md:inline">My Batches</span>
+          <span id="headerMyBatchesCount" class="px-1.5 py-0.5 text-[11px] rounded-full bg-brand-500 text-white font-extrabold leading-none">0</span>
+        </button>
+
+        <!-- Quick Lock/Unlock Status Button -->
+        <button id="headerLockBtn" onclick="handleHeaderLockClick()"
+          class="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs sm:text-sm font-extrabold border transition"
+          title="Batch Access Status">
+          <!-- Updated dynamically by JS -->
+        </button>
+
+        <!-- Custom Sky/Sun/Cloud Toggle Switch (Exact match to Screenshot) -->
+        <button onclick="toggleTheme()" class="sky-toggle focus:outline-none shrink-0" aria-label="Toggle Light/Dark Mode" title="Switch Light / 3D Dark Mode">
+          <div class="sky-toggle-knob">
+            <i class="fa-solid fa-sun text-white text-sm dark:hidden"></i>
+            <i class="fa-solid fa-moon text-slate-950 text-sm hidden dark:inline"></i>
+          </div>
+          <svg class="w-7 h-5 absolute right-1.5 bottom-1 text-white/95 dark:opacity-20 pointer-events-none transition-opacity" viewBox="0 0 32 20" fill="currentColor">
+            <path d="M25.5 18H8.5C5.46 18 3 15.54 3 12.5C3 9.76 5.01 7.49 7.64 7.07C8.87 4.1 11.79 2 15.2 2C19.58 2 23.16 5.42 23.39 9.74C23.75 9.65 24.12 9.6 24.5 9.6C27.26 9.6 29.5 11.84 29.5 14.6C29.5 16.65 27.75 18 25.5 18Z" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= SLIDE-OUT SIDEBAR DRAWER (Matches Screenshot 4) ================= -->
+  <div id="sidebarOverlay" onclick="closeSidebar()"
+    class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
+
+  <aside id="sidebarDrawer"
+    class="fixed top-0 left-0 bottom-0 w-[300px] max-w-[88vw] sm:w-[330px] bg-white dark:bg-[#08120c] z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between border-r border-slate-200 dark:border-lime-500/20 shadow-2xl">
+    
+    <!-- Top Section of Drawer -->
+    <div>
+      <!-- Header with Soft Lime Glow (Exact match to Screenshot 4) -->
+      <div class="relative p-6 pb-5 bg-gradient-to-br from-lime-50/90 via-emerald-50/40 to-white dark:from-lime-950/50 dark:via-[#0b1911] dark:to-[#08120c] border-b border-slate-100 dark:border-lime-500/15">
+        <button onclick="closeSidebar()" aria-label="Close Sidebar"
+          class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-lime-500/10 transition">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <!-- Big 3D Hexagon Logo -->
+        <div class="w-16 h-16 mb-3 filter drop-shadow-[0_4px_12px_rgba(132,204,22,0.5)]">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <polygon points="50,4 91,27 91,73 50,96 9,73 9,27" fill="url(#hexOuter)" />
+            <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="url(#hexInner)" stroke="#a3e635" stroke-width="1.5" />
+            <path d="M50,24 L74,38 L64,54 L50,37 L33,44 L33,54 L28,51 L28,36 Z" fill="url(#ribbonTop)" />
+            <path d="M50,76 L26,62 L36,46 L50,63 L67,56 L67,46 L72,49 L72,64 Z" fill="url(#ribbonBottom)" />
+          </svg>
+        </div>
+
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          SachinCoder<span class="text-[#65a30d] dark:text-[#a3e635]">X</span>
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+          Free batches for every student
+        </p>
+      </div>
+
+      <!-- Navigation Menu Items (Exact Match to Screenshot 4) -->
+      <nav class="p-4 space-y-2">
+        <!-- Batches -->
+        <button id="navAllBatches" onclick="selectCategory('All'); closeSidebar();"
+          class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl bg-[#eefbf3] dark:bg-lime-500/15 text-[#15803d] dark:text-lime-300 font-bold text-base transition">
+          <span class="flex items-center gap-3.5">
+            <i class="fa-solid fa-border-all text-lg"></i>
+            <span>Batches</span>
+          </span>
+          <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-500/15 text-brand-600 dark:text-lime-300">24</span>
+        </button>
+
+        <!-- My Batches (Saved / Accessed Batches) -->
+        <button id="navMyBatches" onclick="selectCategory('My Batches'); closeSidebar();"
+          class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold text-base transition">
+          <span class="flex items-center gap-3.5">
+            <i class="fa-solid fa-graduation-cap text-lg text-slate-600 dark:text-slate-400"></i>
+            <span>My Batches</span>
+          </span>
+          <span id="sidebarMyBatchesCount" class="w-6 h-6 rounded-full bg-[#22c55e] text-white text-xs font-extrabold flex items-center justify-center shadow-sm">
+            0
+          </span>
+        </button>
+
+        <!-- Access Status Row (Clickable to Unlock with Secret Code) -->
+        <button onclick="handleSidebarAccessClick()"
+          class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold text-base transition">
+          <span class="flex items-center gap-3.5">
+            <i id="sidebarAccessIcon" class="fa-solid fa-lock text-lg text-amber-500"></i>
+            <span>Access</span>
+          </span>
+          <span id="sidebarAccessBadge" class="px-3.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 text-xs font-extrabold border border-amber-300/60 dark:border-amber-500/30">
+            Locked 🔒
+          </span>
+        </button>
+
+        <!-- Welcome Voice -->
+        <div class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-slate-700 dark:text-slate-200 font-semibold text-base">
+          <span class="flex items-center gap-3.5">
+            <i id="voiceSpeakerIcon" class="fa-solid fa-volume-high text-lg text-slate-600 dark:text-slate-400"></i>
+            <span class="leading-tight text-left">Welcome<br>Voice</span>
+          </span>
+          <button id="playVoiceBtn" onclick="playWelcomeVoice()"
+            class="px-4 py-1.5 rounded-full bg-[#ecfccb] dark:bg-lime-500/20 hover:bg-[#d9f99d] text-[#3f6212] dark:text-lime-300 text-xs font-extrabold border border-lime-300/60 dark:border-lime-400/30 active:scale-95 transition">
+            Play
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Bottom Mode Switcher in Drawer (Matches Screenshot 4) -->
+    <div class="p-5 border-t border-slate-200 dark:border-lime-500/15 flex items-center justify-between bg-slate-50/50 dark:bg-black/20">
+      <span id="sidebarThemeLabel" class="text-base font-semibold text-slate-600 dark:text-slate-300">
+        Light mode
+      </span>
+      <button onclick="toggleTheme()" class="sky-toggle focus:outline-none" aria-label="Toggle Light/Dark Mode">
+        <div class="sky-toggle-knob">
+          <i class="fa-solid fa-sun text-white text-sm dark:hidden"></i>
+          <i class="fa-solid fa-moon text-slate-950 text-sm hidden dark:inline"></i>
+        </div>
+        <svg class="w-7 h-5 absolute right-1.5 bottom-1 text-white/95 dark:opacity-20 pointer-events-none" viewBox="0 0 32 20" fill="currentColor">
+          <path d="M25.5 18H8.5C5.46 18 3 15.54 3 12.5C3 9.76 5.01 7.49 7.64 7.07C8.87 4.1 11.79 2 15.2 2C19.58 2 23.16 5.42 23.39 9.74C23.75 9.65 24.12 9.6 24.5 9.6C27.26 9.6 29.5 11.84 29.5 14.6C29.5 16.65 27.75 18 25.5 18Z" />
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= SECRET CODE 3D UNLOCK MODAL (`sachincoderx`) ================= -->
+  <div id="secretUnlockModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md opacity-0 transition-opacity duration-300">
+    <div id="secretModalBox" class="relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-[32px] bg-white dark:bg-[#0b1710] border-2 border-lime-500/40 dark:border-lime-400/40 p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.65),0_0_40px_rgba(132,204,22,0.25)] transform scale-95 transition-transform duration-300">
+      
+      <!-- Close Button -->
+      <button onclick="closeSecretModal()" aria-label="Close Unlock Modal"
+        class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 hover:bg-slate-200 flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Glowing 3D Lock Icon Header -->
+      <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-lime-400/20 via-emerald-500/20 to-green-600/20 border border-lime-400/40 flex items-center justify-center shadow-[0_0_30px_rgba(132,204,22,0.35)]">
+        <i id="modalLockIcon" class="fa-solid fa-user-lock text-3xl text-[#16a34a] dark:text-[#a3e635]"></i>
+      </div>
+
+      <div class="text-center mb-6">
+        <span class="inline-block px-3 py-1 rounded-full bg-lime-100 dark:bg-lime-500/20 text-lime-800 dark:text-lime-300 text-xs font-extrabold uppercase tracking-wider mb-2">
+          One-Time Permanent Unlock
+        </span>
+        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          Unlock All 24 Batches
+        </h3>
+        <p id="modalTargetBatchText" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+          Enter the secret access code once to unlock all batches permanently!
+        </p>
+      </div>
+
+      <!-- Secret Code Form -->
+      <form onsubmit="submitSecretCode(event)" class="space-y-4">
+        <div>
+          <label for="secretCodeInput" class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-lime-300/80 mb-1.5">
+            Secret Access Code
+          </label>
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-slate-400 dark:text-lime-400">
+              <i class="fa-solid fa-key"></i>
+            </span>
+            <input
+              id="secretCodeInput"
+              type="password"
+              autocomplete="off"
+              placeholder="Enter secret access code..."
+              class="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-slate-100 dark:bg-[#112418] border-2 border-slate-200 dark:border-lime-500/30 text-slate-900 dark:text-white font-extrabold text-base tracking-wide focus:outline-none focus:border-brand-500 dark:focus:border-lime-400 transition"
+            />
+            <button
+              type="button"
+              onclick="toggleSecretPasswordVisibility()"
+              aria-label="Toggle Password Visibility"
+              class="absolute right-3.5 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-lime-300 transition">
+              <i id="secretEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <p id="secretCodeError" class="hidden text-xs font-bold text-rose-500 mt-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Invalid secret code! Please enter the valid access key.</span>
+          </p>
+        </div>
+
+        <button type="submit"
+          class="btn-enroll-3d w-full py-4 rounded-2xl text-white font-extrabold text-base sm:text-lg flex items-center justify-center gap-2 shadow-xl">
+          <i class="fa-solid fa-unlock-keyhole"></i>
+          <span>Unlock Permanently</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MAIN CONTENT CONTAINER (Matches Screenshot 2 & 3) ================= -->
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-8">
+    
+    <!-- Outer White/Dark Rounded Container Box (Like Screenshot 2) -->
+    <div class="bg-white/95 dark:bg-[#09130d]/90 backdrop-blur-xl rounded-[32px] p-4 sm:p-8 border border-slate-200/90 dark:border-lime-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.8)]">
+      
+      <!-- Top Row: "Batches" Title + Active Counter & Sort Hint -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div>
+          <h1 id="mainSectionHeading" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Batches
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            Tap <i class="fa-solid fa-heart text-rose-500 mx-0.5"></i> to pin any batch to top • Click <strong>Study / Enroll</strong> to auto-save in <strong>My Batches</strong>!
+          </p>
+        </div>
+
+        <!-- 3D Mode Quick Pill -->
+        <div class="flex items-center gap-2">
+          <span id="accessBannerBadge" onclick="handleHeaderLockClick()" class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-lime-100 dark:bg-lime-500/15 text-lime-800 dark:text-lime-300 border border-lime-300/70 dark:border-lime-500/30">
+            <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+            100% Free Access
+          </span>
+        </div>
+      </div>
+
+      <!-- ================= SEARCH BAR (Exact Match to Screenshot 2) ================= -->
+      <div class="relative flex items-center bg-[#f4f6f9] dark:bg-[#112217] rounded-2xl p-1.5 sm:p-2 border border-slate-200/80 dark:border-lime-500/25 mb-6 focus-within:ring-2 focus-within:ring-brand-500 transition">
+        <div class="pl-3 sm:pl-4 pr-2 text-slate-500 dark:text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-lg"></i>
+        </div>
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search Your Batch (e.g. Neev, Udaan, Arjuna, Lakshay)..."
+          oninput="handleSearchInput()"
+          class="min-w-0 w-full bg-transparent text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-base sm:text-lg font-medium focus:outline-none pr-2"
+        />
+        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden px-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+        <button onclick="handleSearchInput(true)"
+          class="px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[#34d374] hover:bg-[#22c55e] text-white font-bold text-base sm:text-lg shadow-md shadow-brand-500/25 active:scale-95 transition shrink-0">
+          Search
+        </button>
+      </div>
+
+      <!-- ================= 3D CINEMATIC HERO PROMO BANNER (Exact Match to Screenshot 2) ================= -->
+      <div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden mb-6 border border-lime-500/30 shadow-[0_14px_35px_-6px_rgba(20,83,45,0.45)]">
+        <div id="heroCarousel" class="relative h-[180px] sm:h-[190px] w-full bg-gradient-to-r from-[#071409] via-[#132a13] to-[#0a1d0e] flex items-center justify-between gap-2 px-4 pb-4 sm:pb-0 sm:px-12 overflow-hidden">
+          
+          <div class="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_70%_50%,rgba(163,230,53,0.45),transparent_60%)]"></div>
+          <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-lime-500/20 rounded-full blur-2xl"></div>
+
+          <!-- Slide Content -->
+          <div id="bannerSlide0" class="relative z-10 min-w-0 flex-1 transition-opacity duration-500">
+            <span class="inline-block px-2.5 py-0.5 rounded-md bg-lime-400/20 border border-lime-400/40 text-lime-300 text-[10px] sm:text-xs font-extrabold tracking-widest uppercase mb-1.5">
+              2026 - 2027 SESSION
+            </span>
+            <h2 class="font-display text-[15px] min-[400px]:text-lg sm:text-3xl md:text-4xl max-sm:leading-tight font-extrabold text-white tracking-wider drop-shadow">
+              JEE <span class="text-lime-400">•</span> NEET <span class="text-lime-400">•</span> BOARDS
+            </h2>
+            <p class="text-xs sm:text-base font-bold text-[#a3e635] mt-0.5 sm:mt-1 flex items-center gap-1.5">
+              <span>Study Smart with SachinCoderX</span>
+              <i class="fa-solid fa-bolt text-yellow-400"></i>
+            </p>
+          </div>
+
+          <!-- Right 3D Glowing Books, Graduation Cap & Atom Illustration -->
+          <div class="relative z-10 flex items-center justify-center w-24 min-[400px]:w-32 sm:w-56 h-full shrink-0 float-slow">
+            <svg viewBox="0 0 220 140" class="w-full h-full drop-shadow-[0_0_16px_rgba(163,230,53,0.5)]">
+              <defs>
+                <linearGradient id="bookGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#d9f99d" />
+                  <stop offset="50%" stop-color="#84cc16" />
+                  <stop offset="100%" stop-color="#15803d" />
+                </linearGradient>
+                <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#334155" />
+                  <stop offset="100%" stop-color="#0f172a" />
+                </linearGradient>
+              </defs>
+              <g transform="translate(175, 58) scale(0.75)" stroke="#a3e635" stroke-width="2" fill="none" opacity="0.85">
+                <ellipse rx="28" ry="10" transform="rotate(30)" />
+                <ellipse rx="28" ry="10" transform="rotate(-30)" />
+                <ellipse rx="28" ry="10" transform="rotate(90)" />
+                <circle r="4" fill="#ecfccb" />
+              </g>
+              <g transform="translate(22, 58) rotate(-12)">
+                <rect x="0" y="10" width="38" height="48" rx="4" fill="url(#bookGlow)" stroke="#ecfccb" stroke-width="1" />
+                <rect x="40" y="10" width="38" height="48" rx="4" fill="url(#bookGlow)" stroke="#ecfccb" stroke-width="1" />
+                <path d="M39,10 L39,58" stroke="#14532d" stroke-width="2.5" />
+              </g>
+              <g transform="translate(88, 66) rotate(14)">
+                <rect x="0" y="0" width="44" height="54" rx="5" fill="url(#bookGlow)" stroke="#fef08a" stroke-width="1.5" />
+                <text x="8" y="28" fill="#052e16" font-size="7" font-weight="900">PHYSICS</text>
+              </g>
+              <g transform="translate(58, 12) rotate(8)">
+                <polygon points="45,8 90,24 45,40 0,24" fill="url(#capGrad)" stroke="#a3e635" stroke-width="2" />
+                <path d="M22,33 L22,48 C22,54 68,54 68,48 L68,33" fill="#1e293b" stroke="#84cc16" stroke-width="1.8" />
+                <path d="M82,27 L88,48" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" />
+                <circle cx="88" cy="50" r="3" fill="#facc15" />
+              </g>
+            </svg>
+          </div>
+
+          <!-- Carousel Indicator Dots -->
+          <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+            <button onclick="setBannerSlide(0)" id="dot0" class="w-2 h-2 rounded-full bg-white/40 transition-all"></button>
+            <button onclick="setBannerSlide(1)" id="dot1" class="w-7 h-2 rounded-full bg-white transition-all"></button>
+            <button onclick="setBannerSlide(2)" id="dot2" class="w-2 h-2 rounded-full bg-white/40 transition-all"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CATEGORY FILTER PILLS (Matches Screenshot 2) ================= -->
+      <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-2 mb-6" id="categoryPillsContainer">
+        <!-- Dynamically rendered pills -->
+      </div>
+
+      <!-- Pinned Favorites Notice Banner (Shown when user has favorited at least 1 batch) -->
+      <div id="pinnedInfoBanner" class="hidden mb-5 px-4 py-3 rounded-2xl bg-gradient-to-r from-rose-500/10 via-lime-500/10 to-emerald-500/10 border border-lime-500/30 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-slate-800 dark:text-lime-200">
+          <span class="w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow shrink-0">
+            <i class="fa-solid fa-heart text-xs"></i>
+          </span>
+          <span>Your favorite batches are automatically pinned to the very top!</span>
+        </div>
+        <button onclick="clearAllFavorites()" class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline shrink-0">
+          Reset Pins
+        </button>
+      </div>
+
+      <!-- My Batches Section Info Header (Shown when viewing "My Batches" tab) -->
+      <div id="myBatchesHeaderBanner" class="hidden mb-6 p-4 rounded-2xl bg-[#eefbf3] dark:bg-lime-950/50 border border-emerald-200 dark:border-lime-500/30 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center text-lg shadow">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">My Saved Batches</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 font-medium">Batches you access or enroll in are automatically saved here for instant study.</p>
+          </div>
+        </div>
+        <button onclick="clearAllMyBatches()" class="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-xs font-extrabold transition">
+          Clear My Batches
+        </button>
+      </div>
+
+      <!-- ================= 3D BATCHES SHOWCASE GRID ================= -->
+      <div id="batchesGrid" class="perspective-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Empty State when Search / Filter has no matches -->
+      <div id="emptyState" class="hidden py-16 text-center">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-center text-brand-500 text-3xl">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h3 id="emptyStateTitle" class="text-xl font-extrabold text-slate-800 dark:text-white mb-1">No Matching Batches Found</h3>
+        <p id="emptyStateSub" class="text-sm text-slate-500 dark:text-slate-400 mb-5 max-w-md mx-auto">Try searching another batch keyword or click "Access / Enroll Now" on any batch to save it to My Batches.</p>
+        <button onclick="resetToAllBatches(event)" class="px-6 py-2.5 rounded-xl bg-brand-500 text-white font-bold text-sm shadow-lg shadow-brand-500/30 hover:bg-brand-600 transition">
+          Explore All 24 Batches
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toastNotification"
+    class="fixed bottom-4 left-4 right-4 sm:left-auto sm:bottom-5 sm:right-5 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 bg-slate-900/95 dark:bg-lime-950/95 text-white border border-lime-500/40 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+    <span id="toastIcon" class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs shrink-0">
+      <i class="fa-solid fa-check"></i>
+    </span>
+    <span id="toastText" class="text-xs sm:text-sm font-bold">Saved to My Batches!</span>
+  </div>
+
+  <!-- ================= EDUCATIONAL PURPOSE FOOTER ================= -->
+  <footer class="relative z-10 mt-8 border-t border-slate-200/80 dark:border-lime-500/15 py-6 px-4 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2 font-bold text-slate-800 dark:text-white">
+        <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+        <span>SachinCoder<span class="text-brand-500">X</span> — 3D Premium Batch Portal</span>
+      </div>
+      <p class="font-medium">
+        🎓 Built Strictly for <span class="text-brand-600 dark:text-lime-400 font-bold">Educational Purpose Only</span> • Free Batches For Every Student
+      </p>
+    </div>
+  </footer>
+
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    // Secret Code Constant
+    const SECRET_ACCESS_CODE = 'sachincoderx';
+
+    // Complete list of 24 Batches provided by the user with exact titles, thumbnails, and direct links
+    const BATCHES_DATA = [
+      {
+        id: 'neev-2027',
+        name: 'Neev 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/66bccdb9-40a0-411d-8aec-9d6cbd7af02a.png',
+        link: 'https://www.learnxpw.site/study/batches/698de475543bcb25f95449b8',
+        target: 'For Class 9th Students',
+        categories: ['Foundation'],
+        oldPrice: '₹3500',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'neev-up-2027',
+        name: 'Neev up board 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/7294faa6-12c5-4f20-a3eb-b227b6ad8d30.png',
+        link: 'https://www.learnxpw.site/study/batches/69734ce1b0c696dcee5c35a9',
+        target: 'For Class 9th UP Board Students',
+        categories: ['Foundation', 'UP Board'],
+        oldPrice: '₹3200',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'udaan-2027',
+        name: 'Udaan 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/65ca4b7b-e751-4c8a-8139-7204e06eddc8.png',
+        link: 'https://www.learnxpw.site/study/batches/67790151518b938bc630052d',
+        target: 'For Class 10th Students',
+        categories: ['Foundation'],
+        oldPrice: '₹3800',
+        startsOn: '10 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'udaan-up-2027',
+        name: 'Udaan up board 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/9208abb4-205e-433d-bafb-8ff1efdc2382.png',
+        link: 'https://www.learnxpw.site/study/batches/69737cfccbe58ca6dbccb146',
+        target: 'For Class 10th UP Board Students',
+        categories: ['Foundation', 'UP Board'],
+        oldPrice: '₹3500',
+        startsOn: '12 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'uday-2027',
+        name: 'Uday 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/509fffaf-7bca-41bc-8bb1-20a9b77f5a36.png',
+        link: 'https://www.learnxpw.site/study/batches/698de475e0f24f0f10b97658',
+        target: 'For Class 11th Science Students',
+        categories: ['Foundation'],
+        oldPrice: '₹4200',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'uday-2-2027',
+        name: 'Uday 2.0 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/d815b48b-c5d6-4b6f-9dec-a1a59ebd0647.png',
+        link: 'https://www.learnxpw.site/study/batches/699434fe5423bd3d67b049b8',
+        target: 'For Class 11th Students',
+        categories: ['Foundation'],
+        oldPrice: '₹4200',
+        startsOn: '20 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'uday-commerce-2027',
+        name: 'Uday commerce 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/82b82785-4e1c-45bc-b7e8-d850741b9258.png',
+        link: 'https://www.learnxpw.site/study/batches/6984a17d4520f144c34e3745',
+        target: 'For Class 11th Commerce Students',
+        categories: ['Commerce & Arts'],
+        oldPrice: '₹3999',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'uday-humanities-2027',
+        name: 'Uday humanities 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/bcdfa46b-cbb0-41a6-8a63-9ee77c8b85fc.png',
+        link: 'https://www.learnxpw.site/study/batches/698de47558bc860709d89651',
+        target: 'For Class 11th Humanities Students',
+        categories: ['Commerce & Arts'],
+        oldPrice: '₹3999',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'parishram-2027',
+        name: 'Parishram 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/c6145313-9d24-4782-8f9d-e6c89b276726.png',
+        link: 'https://www.learnxpw.site/study/batches/697cddabf050baa08837223e',
+        target: 'For Class 12th Board Students',
+        categories: ['Foundation'],
+        oldPrice: '₹4500',
+        startsOn: '05 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'parishram-commerce-2027',
+        name: 'Parishram commerce 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/e928d773-6f3e-442f-91c2-49f0062b019b.png',
+        link: 'https://www.learnxpw.site/study/batches/67a369a90af17d7290ede6bf',
+        target: 'For Class 12th Commerce Students',
+        categories: ['Commerce & Arts'],
+        oldPrice: '₹4200',
+        startsOn: '10 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'parishram-humanities-2027',
+        name: 'Parishram humanities 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/a3eac15e-953d-4003-ab39-d18a643d3140.png',
+        link: 'https://www.learnxpw.site/study/batches/698de47558bc860709d89653',
+        target: 'For Class 12th Humanities Students',
+        categories: ['Commerce & Arts'],
+        oldPrice: '₹4200',
+        startsOn: '10 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'avadh-2027',
+        name: 'Avadh 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/3e903963-c511-4bd4-861d-abfe904c5e86.png',
+        link: 'https://www.learnxpw.site/study/batches/69735b2ce8d8aa8fcbd5068e',
+        target: 'For UP Board Students',
+        categories: ['UP Board'],
+        oldPrice: '₹3500',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'arjuna-neet-hindi-2027',
+        name: 'Arjuna neet 2027 hindi medium',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/fb391e14-75a6-41dd-88a2-001bb647c027.png',
+        link: 'https://www.learnxpw.site/study/batches/698adaafa0f64197c39c41af',
+        target: 'For Class 11th NEET (Hindi Medium)',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4800',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'arjuna-jee-2027',
+        name: 'Arjuna jee 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/2819ecfc-efc7-4215-a779-20a45e1655cf.png',
+        link: 'https://www.learnxpw.site/study/batches/698ad3519549b300a5e1cc6a',
+        target: 'For Class 11th JEE Aspirants',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '10 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'arjuna-jee-2-2027',
+        name: 'Arjuna jee 2.0 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/ff6f86a3-0a86-4d7d-be30-4ccba12fa838.png',
+        link: 'https://www.learnxpw.site/study/batches/69919d4755afdfb898bb08d8',
+        target: 'For Class 11th JEE Aspirants',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '22 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'arjuna-neet-2027',
+        name: 'Arjuna neet 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/64c5b9e3-9554-4a7f-8411-c155f81e2185.png',
+        link: 'https://www.learnxpw.site/study/batches/69897f0ad7c19b7b2f7cc35f',
+        target: 'For Class 11th NEET Aspirants',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '10 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'lakshay-jee-2027',
+        name: 'Lakshay jee 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/4b362dbb-e08d-47fa-8cb5-dc5c10b6a897.png',
+        link: 'https://www.learnxpw.site/study/batches/6779345c20fa0756e4a7fd08',
+        target: 'For Class 12th JEE Aspirants',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '05 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'lakshay-neet-2027',
+        name: 'Lakshay neet 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/6f914ec9-5300-422d-8935-6e2f781571fd.png',
+        link: 'https://www.learnxpw.site/study/batches/6779346f920e596fe7f0e247',
+        target: 'For Class 12th NEET Aspirants',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '05 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'parishram-up-2027',
+        name: 'Parishram up board 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/a5497de2-7617-44e4-bb14-ba19f9901091.png',
+        link: 'https://www.learnxpw.site/study/batches/69739a4601c3c6e7944edbd1',
+        target: 'For Class 12th UP Board Students',
+        categories: ['UP Board'],
+        oldPrice: '₹3800',
+        startsOn: '12 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'uday-nda-2027',
+        name: 'Uday 2027 + nda foundation 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/ce2532d3-0e62-4b5f-bb58-b375b03bc3f4.png',
+        link: 'https://www.learnxpw.site/study/batches/698af10a518ff8691b6a5c45',
+        target: 'For Class 11th + NDA Aspirants',
+        categories: ['Foundation'],
+        oldPrice: '₹5200',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'yakeen-neet-2-2027',
+        name: 'Yakeen neet 2.0 2027',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/8341792b-fcd2-4877-a275-3b479acf0fbe.png',
+        link: 'https://www.learnxpw.site/study/batches/698ec4d979fb4aa23c1fd2c3',
+        target: 'For NEET Dropper & Repeaters',
+        categories: ['JEE / NEET'],
+        oldPrice: '₹4999',
+        startsOn: '18 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'earners-pw',
+        name: 'Earners pw',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/d23c8375-3c43-45da-8328-f296efdbd418.jpg',
+        link: 'https://www.learnxpw.site/study/batches/69d9d27b1b0b242505d90c9c',
+        target: 'For Skill & Career Learners',
+        categories: ['Pro / Finance'],
+        oldPrice: '₹3999',
+        startsOn: 'Instant Access',
+        endsOn: 'Lifetime'
+      },
+      {
+        id: 'fin-x-cfa-1',
+        name: 'Fin- x cfa level 1 batch',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/b4c38d49-d18a-4f8a-a241-c4f7c24625cc.png',
+        link: 'https://www.learnxpw.site/study/batches/69e870432dd952843db57ab0',
+        target: 'For Finance & CFA Level 1 Aspirants',
+        categories: ['Pro / Finance', 'Commerce & Arts'],
+        oldPrice: '₹6500',
+        startsOn: '15 Apr 2026',
+        endsOn: '31 Mar 2027'
+      },
+      {
+        id: 'earners-pc',
+        name: 'Earners pc',
+        thumbnail: 'https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/0b8249f1-76e6-48f8-8a42-aad1864a6da4.jpeg',
+        link: 'https://www.learnxpw.site/study/batches/6a225922216738be6ca48bb1',
+        target: 'For Digital Skills & PC Learners',
+        categories: ['Pro / Finance'],
+        oldPrice: '₹3999',
+        startsOn: 'Instant Access',
+        endsOn: 'Lifetime'
+      }
+    ];
+
+    const CATEGORIES = [
+      'All',
+      'My Batches',
+      'Foundation',
+      'UP Board',
+      'JEE / NEET',
+      'Commerce & Arts',
+      'Pro / Finance'
+    ];
+
+    // State Management
+    let isPermanentlyUnlocked = false;
+    let favoriteIds = [];
+    let myBatchIds = [];
+    let activeCategory = 'All';
+    let searchQuery = '';
+    let lastToggledId = null;
+    let pendingBatchIdToOpen = null; // Stores batch ID clicked before unlocking
+
+    // Load Favorites, My Batches, Permanent Unlock & Theme from localStorage
+    function loadSavedState() {
+      try {
+        isPermanentlyUnlocked = localStorage.getItem('scx_permanent_access') === 'true';
+
+        const savedFavs = localStorage.getItem('sachincoderx_fav_batches');
+        if (savedFavs) favoriteIds = JSON.parse(savedFavs);
+
+        const savedMyBatches = localStorage.getItem('scx_my_batches');
+        if (savedMyBatches) myBatchIds = JSON.parse(savedMyBatches);
+
+        const savedTheme = localStorage.getItem('sachincoderx_theme');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        }
+      } catch (e) {
+        favoriteIds = [];
+        myBatchIds = [];
+      }
+      updateThemeLabels();
+      updateAccessStatusUI();
+    }
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem('sachincoderx_fav_batches', JSON.stringify(favoriteIds));
+      } catch (e) {}
+    }
+
+    function saveMyBatches() {
+      try {
+        localStorage.setItem('scx_my_batches', JSON.stringify(myBatchIds));
+      } catch (e) {}
+    }
+
+    // Update Header & Sidebar Lock/Unlock Status Badges
+    function updateAccessStatusUI() {
+      const headerLockBtn = document.getElementById('headerLockBtn');
+      const sidebarAccessIcon = document.getElementById('sidebarAccessIcon');
+      const sidebarAccessBadge = document.getElementById('sidebarAccessBadge');
+      const accessBannerBadge = document.getElementById('accessBannerBadge');
+
+      if (isPermanentlyUnlocked) {
+        if (headerLockBtn) {
+          headerLockBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-[#eefbf3] dark:bg-emerald-950/80 text-[#15803d] dark:text-emerald-300 border border-emerald-300/70 dark:border-emerald-500/30 transition';
+          headerLockBtn.innerHTML = `<i class="fa-solid fa-lock-open text-xs"></i><span class="hidden sm:inline">Unlocked</span>`;
+        }
+        if (sidebarAccessIcon) {
+          sidebarAccessIcon.className = 'fa-solid fa-lock-open text-lg text-[#16a34a] dark:text-lime-400';
+        }
+        if (sidebarAccessBadge) {
+          sidebarAccessBadge.className = 'px-3.5 py-1 rounded-full bg-[#eefbf3] dark:bg-emerald-950/90 text-[#15803d] dark:text-emerald-400 text-xs font-extrabold border border-emerald-200/60 dark:border-emerald-500/30';
+          sidebarAccessBadge.textContent = 'Unlocked';
+        }
+        if (accessBannerBadge) {
+          accessBannerBadge.className = 'cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-lime-100 dark:bg-lime-500/15 text-lime-800 dark:text-lime-300 border border-lime-300/70 dark:border-lime-500/30';
+          accessBannerBadge.innerHTML = `<i class="fa-solid fa-circle-check text-brand-600 dark:text-lime-400"></i><span>All Batches Unlocked</span>`;
+        }
+      } else {
+        if (headerLockBtn) {
+          headerLockBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-amber-50 dark:bg-amber-950/70 text-amber-600 dark:text-amber-300 border border-amber-300/70 dark:border-amber-500/30 hover:border-amber-400 transition animate-pulse';
+          headerLockBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span class="hidden sm:inline">Locked</span>`;
+        }
+        if (sidebarAccessIcon) {
+          sidebarAccessIcon.className = 'fa-solid fa-lock text-lg text-amber-500';
+        }
+        if (sidebarAccessBadge) {
+          sidebarAccessBadge.className = 'px-3.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 text-xs font-extrabold border border-amber-300/60 dark:border-amber-500/30';
+          sidebarAccessBadge.textContent = 'Locked 🔒';
+        }
+        if (accessBannerBadge) {
+          accessBannerBadge.className = 'cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-100/80 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300/70 dark:border-amber-500/30';
+          accessBannerBadge.innerHTML = `<i class="fa-solid fa-key text-amber-600 dark:text-amber-400"></i><span>Tap to Unlock Code</span>`;
+        }
+      }
+    }
+
+    function handleHeaderLockClick() {
+      if (isPermanentlyUnlocked) {
+        showToast('🔓 All 24 Batches are permanently unlocked!');
+      } else {
+        openSecretModal(null);
+      }
+    }
+
+    function handleSidebarAccessClick() {
+      closeSidebar();
+      if (isPermanentlyUnlocked) {
+        showToast('🔓 Permanent Access is already active!');
+      } else {
+        openSecretModal(null);
+      }
+    }
+
+    // Open Secret Code Modal
+    function openSecretModal(batchId) {
+      pendingBatchIdToOpen = batchId || null;
+      const modal = document.getElementById('secretUnlockModal');
+      const box = document.getElementById('secretModalBox');
+      const input = document.getElementById('secretCodeInput');
+      const eyeIcon = document.getElementById('secretEyeIcon');
+      const err = document.getElementById('secretCodeError');
+      const targetText = document.getElementById('modalTargetBatchText');
+
+      err.classList.add('hidden');
+      input.value = '';
+      input.type = 'password';
+      if (eyeIcon) {
+        eyeIcon.className = 'fa-solid fa-eye';
+      }
+
+      if (batchId) {
+        const batch = BATCHES_DATA.find(b => b.id === batchId);
+        targetText.innerHTML = `Enter your secret access code to unlock <strong>${batch ? batch.name : 'this batch'}</strong> & all 24 batches permanently!`;
+      } else {
+        targetText.innerHTML = `Enter your secret access code once to unlock all 24 batches permanently!`;
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95');
+        box.classList.add('scale-100');
+        setTimeout(() => input.focus(), 80);
+      });
+    }
+
+    function closeSecretModal() {
+      const modal = document.getElementById('secretUnlockModal');
+      const box = document.getElementById('secretModalBox');
+      modal.classList.add('opacity-0');
+      box.classList.remove('scale-100');
+      box.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+      }, 260);
+    }
+
+    function toggleSecretPasswordVisibility() {
+      const input = document.getElementById('secretCodeInput');
+      const eyeIcon = document.getElementById('secretEyeIcon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
+      }
+      input.focus();
+    }
+
+    // Validate Secret Code (`sachincoderx`)
+    function submitSecretCode(e) {
+      e.preventDefault();
+      const input = document.getElementById('secretCodeInput');
+      const err = document.getElementById('secretCodeError');
+      const box = document.getElementById('secretModalBox');
+      const entered = (input.value || '').trim().toLowerCase();
+
+      if (entered === SECRET_ACCESS_CODE) {
+        // Save permanent access
+        isPermanentlyUnlocked = true;
+        try {
+          localStorage.setItem('scx_permanent_access', 'true');
+        } catch (errStorage) {}
+
+        updateAccessStatusUI();
+        closeSecretModal();
+
+        // Celebratory voice/sound feedback
+        if ('speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance('Access Unlocked Permanently!');
+            utter.rate = 1.08;
+            window.speechSynthesis.speak(utter);
+          } catch (voiceErr) {}
+        }
+
+        // If user clicked a specific batch before unlocking, save it to My Batches and redirect immediately
+        if (pendingBatchIdToOpen) {
+          const targetId = pendingBatchIdToOpen;
+          pendingBatchIdToOpen = null;
+          enrollAndOpenBatch(targetId);
+        } else {
+          renderCategories();
+          renderBatches();
+          showToast('🔓 Access Unlocked Permanently! All 24 Batches Ready.');
+        }
+      } else {
+        err.classList.remove('hidden');
+        box.classList.remove('animate-shake');
+        void box.offsetWidth; // trigger reflow
+        box.classList.add('animate-shake');
+      }
+    }
+
+    // Handle clicking Study / Access / Enroll Now or Thumbnail on any Batch Card
+    function handleBatchAccess(batchId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      if (!isPermanentlyUnlocked) {
+        openSecretModal(batchId);
+        return;
+      }
+      enrollAndOpenBatch(batchId);
+    }
+
+    // Save batch to "My Batches" automatically and open its direct study URL
+    function enrollAndOpenBatch(batchId) {
+      const batch = BATCHES_DATA.find(b => b.id === batchId);
+      if (!batch) return;
+
+      if (!myBatchIds.includes(batchId)) {
+        myBatchIds.unshift(batchId);
+        saveMyBatches();
+      }
+
+      renderCategories();
+      renderBatches();
+      showToast(`🎓 "${batch.name}" saved to My Batches! Opening...`);
+
+      // Open direct batch link in new tab
+      window.open(batch.link, '_blank', 'noopener,noreferrer');
+    }
+
+    function removeFromMyBatches(batchId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const idx = myBatchIds.indexOf(batchId);
+      const batch = BATCHES_DATA.find(b => b.id === batchId);
+      if (idx !== -1) {
+        myBatchIds.splice(idx, 1);
+        saveMyBatches();
+        renderCategories();
+        renderBatches();
+        showToast(`Removed "${batch ? batch.name : 'Batch'}" from My Batches`);
+      }
+    }
+
+    function clearAllMyBatches() {
+      myBatchIds = [];
+      saveMyBatches();
+      renderCategories();
+      renderBatches();
+      showToast('Cleared all saved batches from My Batches');
+    }
+
+    // Toggle Favorite Heart & Immediately Pin to Top
+    function toggleFavorite(batchId, event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      const index = favoriteIds.indexOf(batchId);
+      const batchObj = BATCHES_DATA.find(b => b.id === batchId);
+
+      if (index === -1) {
+        favoriteIds.unshift(batchId);
+        lastToggledId = batchId;
+        showToast(`❤️ "${batchObj ? batchObj.name : 'Batch'}" pinned to top!`);
+      } else {
+        favoriteIds.splice(index, 1);
+        lastToggledId = null;
+        showToast(`Removed "${batchObj ? batchObj.name : 'Batch'}" from favorites`);
+      }
+
+      saveFavorites();
+      renderCategories();
+      renderBatches();
+    }
+
+    function clearAllFavorites() {
+      favoriteIds = [];
+      saveFavorites();
+      renderCategories();
+      renderBatches();
+      showToast('Cleared all pinned favorites');
+    }
+
+    // Render Category Pills + Update Counters in Header & Sidebar
+    function renderCategories() {
+      const container = document.getElementById('categoryPillsContainer');
+      const favCount = favoriteIds.length;
+      const myCount = myBatchIds.length;
+
+      // Update counters in header & sidebar
+      const headerMyCountEl = document.getElementById('headerMyBatchesCount');
+      const sidebarMyCountEl = document.getElementById('sidebarMyBatchesCount');
+      if (headerMyCountEl) headerMyCountEl.textContent = myCount;
+      if (sidebarMyCountEl) sidebarMyCountEl.textContent = myCount;
+
+      // Highlight active sidebar tab
+      const navAll = document.getElementById('navAllBatches');
+      const navMy = document.getElementById('navMyBatches');
+      if (navAll && navMy) {
+        if (activeCategory === 'My Batches') {
+          navMy.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-2xl bg-[#eefbf3] dark:bg-lime-500/15 text-[#15803d] dark:text-lime-300 font-bold text-base transition';
+          navAll.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold text-base transition';
+        } else {
+          navAll.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-2xl bg-[#eefbf3] dark:bg-lime-500/15 text-[#15803d] dark:text-lime-300 font-bold text-base transition';
+          navMy.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold text-base transition';
+        }
+      }
+
+      // Show/hide Pinned Favorites Banner & My Batches Banner
+      const pinnedBanner = document.getElementById('pinnedInfoBanner');
+      if (favCount > 0 && activeCategory !== 'My Batches') {
+        pinnedBanner.classList.remove('hidden');
+      } else {
+        pinnedBanner.classList.add('hidden');
+      }
+
+      const myBatchesBanner = document.getElementById('myBatchesHeaderBanner');
+      const mainHeading = document.getElementById('mainSectionHeading');
+      if (activeCategory === 'My Batches') {
+        if (myCount > 0) myBatchesBanner.classList.remove('hidden');
+        else myBatchesBanner.classList.add('hidden');
+        if (mainHeading) mainHeading.textContent = `My Batches (${myCount})`;
+      } else {
+        myBatchesBanner.classList.add('hidden');
+        if (mainHeading) mainHeading.textContent = 'Batches';
+      }
+
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isActive = activeCategory === cat;
+        const isMyBatchesPill = cat === 'My Batches';
+        const label = isMyBatchesPill ? `🎓 My Batches (${myCount})` : cat;
+
+        if (isActive) {
+          return `
+            <button onclick="selectCategory('${cat}')"
+              class="px-6 py-2.5 rounded-full bg-[#22c55e] text-white font-bold text-sm sm:text-base shadow-md shadow-brand-500/30 shrink-0 transition transform scale-[1.02]">
+              ${label}
+            </button>
+          `;
+        } else {
+          return `
+            <button onclick="selectCategory('${cat}')"
+              class="px-6 py-2.5 rounded-full bg-white dark:bg-[#101f15] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-lime-500/20 hover:border-brand-500 font-semibold text-sm sm:text-base shrink-0 transition">
+              ${label}
+            </button>
+          `;
+        }
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      renderCategories();
+      renderBatches();
+    }
+
+    function resetToAllBatches(e) {
+      if (e) e.preventDefault();
+      activeCategory = 'All';
+      searchQuery = '';
+      const input = document.getElementById('searchInput');
+      if (input) input.value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderCategories();
+      renderBatches();
+    }
+
+    // Debounced 60FPS Search Input Handler
+    let searchDebounceTimer = null;
+    function handleSearchInput(immediate = false) {
+      const input = document.getElementById('searchInput');
+      const val = (input.value || '').trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      if (val.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+      if (immediate) {
+        searchQuery = val;
+        renderBatches();
+      } else {
+        searchDebounceTimer = setTimeout(() => {
+          searchQuery = val;
+          renderBatches();
+        }, 110);
+      }
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderBatches();
+    }
+
+    // Render All Filtered & Sorted Batches (Favorited Batches Always First!)
+    function renderBatches() {
+      const grid = document.getElementById('batchesGrid');
+      const emptyState = document.getElementById('emptyState');
+      const emptyTitle = document.getElementById('emptyStateTitle');
+      const emptySub = document.getElementById('emptyStateSub');
+
+      // 1. Filter by category & search query
+      let filtered = BATCHES_DATA.filter(batch => {
+        const matchesCat =
+          activeCategory === 'All' ||
+          (activeCategory === 'My Batches' && myBatchIds.includes(batch.id)) ||
+          batch.categories.includes(activeCategory);
+
+        const matchesSearch =
+          !searchQuery ||
+          batch.name.toLowerCase().includes(searchQuery) ||
+          batch.target.toLowerCase().includes(searchQuery) ||
+          batch.categories.join(' ').toLowerCase().includes(searchQuery);
+
+        return matchesCat && matchesSearch;
+      });
+
+      // 2. Sort so that Favorited Batches appear at the VERY TOP in order of favorite pinning
+      filtered.sort((a, b) => {
+        const aFavIndex = favoriteIds.indexOf(a.id);
+        const bFavIndex = favoriteIds.indexOf(b.id);
+        const aIsFav = aFavIndex !== -1;
+        const bIsFav = bFavIndex !== -1;
+
+        if (aIsFav && !bIsFav) return -1;
+        if (!aIsFav && bIsFav) return 1;
+        if (aIsFav && bIsFav) return aFavIndex - bFavIndex;
+
+        // If viewing My Batches, preserve recent enrollment order
+        if (activeCategory === 'My Batches') {
+          return myBatchIds.indexOf(a.id) - myBatchIds.indexOf(b.id);
+        }
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        if (activeCategory === 'My Batches') {
+          emptyTitle.textContent = 'No Batches Saved in My Batches Yet';
+          emptySub.textContent = 'Click "Study" or "Enroll Now" on any batch card and it will automatically be saved here for instant access!';
+        } else {
+          emptyTitle.textContent = 'No Matching Batches Found';
+          emptySub.textContent = 'Try searching another batch keyword or switching the category filter.';
+        }
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(batch => {
+        const isFav = favoriteIds.includes(batch.id);
+        const isSavedInMyBatches = myBatchIds.includes(batch.id);
+        const shouldAnimateHeart = lastToggledId === batch.id;
+
+        return `
+          <article
+            onmousemove="handleCard3DMouseMove(event, this)"
+            onmouseleave="handleCard3DMouseLeave(this)"
+            class="batch-card-3d ${isFav ? 'is-favorite' : ''} ${isSavedInMyBatches ? 'is-enrolled' : ''} p-5 sm:p-6 flex flex-col justify-between group">
+            
+            <!-- Specular 3D Glare Layer -->
+            <div class="card-glare"></div>
+
+            <div>
+              <!-- Top Status Badges Row (Pinned Favorite / Enrolled / Locked Status) -->
+              <div class="mb-2.5 flex flex-wrap items-center justify-between gap-1.5">
+                <div class="flex items-center gap-1.5">
+                  ${isFav ? `
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 text-[11px] font-extrabold border border-rose-500/30">
+                      <i class="fa-solid fa-thumbtack rotate-45 text-[10px]"></i>
+                      Pinned Top
+                    </span>
+                  ` : ''}
+                  ${isSavedInMyBatches ? `
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[11px] font-extrabold border border-emerald-500/30">
+                      <i class="fa-solid fa-circle-check text-[10px]"></i>
+                      In My Batches
+                    </span>
+                  ` : ''}
+                </div>
+
+                ${!isPermanentlyUnlocked ? `
+                  <span onclick="openSecretModal('${batch.id}')" class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold border border-amber-500/30">
+                    <i class="fa-solid fa-lock text-[10px]"></i>
+                    Locked
+                  </span>
+                ` : `
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-lime-500/10 dark:bg-lime-500/20 text-lime-700 dark:text-lime-300 text-[11px] font-extrabold border border-lime-500/30">
+                    <i class="fa-solid fa-lock-open text-[10px]"></i>
+                    Unlocked
+                  </span>
+                `}
+              </div>
+
+              <!-- Card Header: Batch Name + New Badge (Matches Screenshot 2 & 3) -->
+              <div class="flex items-start justify-between gap-2 mb-4">
+                <h3 class="text-xl sm:text-[22px] font-extrabold text-slate-900 dark:text-white leading-snug tracking-tight capitalize">
+                  ${batch.name}
+                </h3>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-3.5 py-1 rounded-xl bg-[#facc15] text-slate-950 font-extrabold text-xs sm:text-sm shadow-sm">
+                    New
+                  </span>
+                </div>
+              </div>
+
+              <!-- Full Batch Thumbnail with Floating Heart Pin Button on Top Right -->
+              <div class="thumb-wrapper relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 mb-5 border border-slate-200/70 dark:border-lime-500/20 shadow-md group-hover:shadow-xl transition-all">
+                <a href="${batch.link}" onclick="handleBatchAccess('${batch.id}', event)"
+                  class="block w-full h-full focus:outline-none">
+                  <img
+                    src="${batch.thumbnail}"
+                    alt="${batch.name}"
+                    loading="lazy"
+                    decoding="async"
+                    onerror="this.onerror=null;this.src='https://placehold.co/800x450/0f291e/a3e635?text=' + encodeURIComponent('${batch.name}');"
+                    class="w-full h-full object-cover object-center group-hover:scale-[1.04] transition-transform duration-500"
+                  />
+                </a>
+
+                <!-- Heart Favorite Button Directly Over Thumbnail Top-Right -->
+                <button
+                  onclick="toggleFavorite('${batch.id}', event)"
+                  aria-label="Pin ${batch.name} to Top Favorites"
+                  title="${isFav ? 'Remove from Favorites' : 'Pin Batch to Top'}"
+                  class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
+                    isFav
+                      ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/50 scale-105'
+                      : 'bg-black/45 text-white/90 border-white/25 hover:bg-rose-500 hover:border-rose-400 hover:text-white'
+                  } ${shouldAnimateHeart ? 'animate-heart-pop' : ''}">
+                  <i class="fa-solid fa-heart text-base"></i>
+                </button>
+
+                <!-- Lock / Direct Access Overlay Pill on Thumbnail Bottom -->
+                <div onclick="handleBatchAccess('${batch.id}', event)"
+                  class="cursor-pointer absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent p-3 flex items-end justify-between opacity-95 group-hover:opacity-100 transition-opacity">
+                  <span class="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-white text-[11px] font-bold flex items-center gap-1.5 border border-white/15">
+                    <i class="fa-solid ${isPermanentlyUnlocked ? 'fa-circle-play text-lime-400' : 'fa-lock text-amber-400'}"></i>
+                    <span>${isPermanentlyUnlocked ? 'Direct Study Access' : 'Protected Batch • Tap to Unlock'}</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Batch Metadata Details (Exact Match to Screenshot 3) -->
+              <div class="space-y-2.5 mb-4">
+                <div class="flex items-center gap-2.5 text-slate-800 dark:text-slate-200 font-bold text-sm sm:text-base">
+                  <i class="fa-solid fa-user-check text-slate-500 dark:text-lime-400 text-sm"></i>
+                  <span>${batch.target}</span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+                  <i class="fa-regular fa-calendar text-slate-400 dark:text-lime-400"></i>
+                  <span>Starts on <strong class="text-slate-800 dark:text-slate-200 font-bold">${batch.startsOn}</strong></span>
+                  <span class="text-slate-300 dark:text-slate-700">|</span>
+                  <span>Ends on <strong class="text-slate-800 dark:text-slate-200 font-bold">${batch.endsOn}</strong></span>
+                </div>
+              </div>
+
+              <!-- Price Row: ₹ FREE + Strikethrough + 100% Free Badge (Matches Screenshot 3) -->
+              <div class="mb-5">
+                <div class="flex items-baseline gap-2.5 mb-2.5">
+                  <span class="text-2xl sm:text-3xl font-extrabold text-[#16a34a] dark:text-[#4ade80] tracking-tight">
+                    ₹ FREE
+                  </span>
+                  <span class="text-base sm:text-lg font-semibold text-slate-400 line-through">
+                    ${batch.oldPrice}
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                  <div class="inline-block px-4 py-1.5 rounded-xl bg-[#eefbf3] dark:bg-emerald-950/80 border border-emerald-200/70 dark:border-emerald-500/30 text-[#16a34a] dark:text-emerald-300 font-bold text-xs sm:text-sm">
+                    100% Free For Students
+                  </div>
+
+                  ${activeCategory === 'My Batches' ? `
+                    <button onclick="removeFromMyBatches('${batch.id}', event)"
+                      class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-extrabold transition"
+                      title="Remove from My Batches">
+                      <i class="fa-solid fa-trash-can mr-1"></i>Remove
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons at Bottom (Study + Enroll Now / Access Direct Redirect) -->
+            <div class="space-y-3 pt-1">
+              <!-- Study / Access Batch Button (Matches Screenshot 3) -->
+              <button onclick="handleBatchAccess('${batch.id}', event)"
+                class="w-full py-3 px-4 rounded-2xl border border-slate-200 dark:border-lime-500/30 bg-white dark:bg-[#112217] hover:bg-slate-50 dark:hover:bg-lime-500/15 text-slate-900 dark:text-white font-bold text-base flex items-center justify-center gap-2.5 shadow-sm active:scale-[0.99] transition">
+                <i class="fa-solid ${isPermanentlyUnlocked ? 'fa-graduation-cap text-slate-700 dark:text-lime-400' : 'fa-lock text-amber-500'}"></i>
+                <span>${isPermanentlyUnlocked ? 'Study' : 'Unlock to Study'}</span>
+              </button>
+
+              <!-- Vibrant Green Enroll Now / Access Button (Matches Screenshot 3) -->
+              <button onclick="handleBatchAccess('${batch.id}', event)"
+                class="btn-enroll-3d w-full py-3.5 px-4 rounded-2xl text-white font-extrabold text-base sm:text-lg flex items-center justify-center gap-2.5">
+                <span>${isSavedInMyBatches ? 'Open Batch Now' : 'Enroll Now'}</span>
+                <i class="fa-solid ${isPermanentlyUnlocked ? 'fa-bookmark' : 'fa-key'} text-sm"></i>
+              </button>
+            </div>
+
+          </article>
+        `;
+      }).join('');
+
+      lastToggledId = null;
+    }
+
+    // Ultra-Smooth 60FPS requestAnimationFrame 3D Card Tilt on Desktop
+    let tiltRafId = null;
+    function handleCard3DMouseMove(e, card) {
+      if (window.innerWidth < 768 || !window.matchMedia('(hover: hover)').matches) return;
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+
+      if (tiltRafId) cancelAnimationFrame(tiltRafId);
+      tiltRafId = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -4.8;
+        const rotateY = ((x - centerX) / centerX) * 4.8;
+
+        card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translate3d(0, -4px, 0)`;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    }
+
+    function handleCard3DMouseLeave(card) {
+      if (tiltRafId) cancelAnimationFrame(tiltRafId);
+      card.style.transform = 'translate3d(0, 0, 0)';
+    }
+
+    // Sidebar Drawer Open / Close
+    const sidebarDrawer = document.getElementById('sidebarDrawer');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    document.getElementById('openSidebarBtn').addEventListener('click', () => {
+      sidebarOverlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        sidebarOverlay.classList.remove('opacity-0');
+        sidebarDrawer.classList.remove('-translate-x-full');
+      });
+    });
+
+    function closeSidebar() {
+      sidebarOverlay.classList.add('opacity-0');
+      sidebarDrawer.classList.add('-translate-x-full');
+      setTimeout(() => {
+        sidebarOverlay.classList.add('hidden');
+      }, 280);
+    }
+
+    // Light / Cinematic 3D Dark Mode Toggle
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.contains('dark');
+      if (isDark) {
+        htmlEl.classList.remove('dark');
+        htmlEl.classList.add('light');
+        try { localStorage.setItem('sachincoderx_theme', 'light'); } catch (e) {}
+        showToast('☀️ Switched to Premium Light Mode');
+      } else {
+        htmlEl.classList.add('dark');
+        htmlEl.classList.remove('light');
+        try { localStorage.setItem('sachincoderx_theme', 'dark'); } catch (e) {}
+        showToast('🌌 Switched to Cinematic 3D Dark Mode');
+      }
+      updateThemeLabels();
+    }
+
+    function updateThemeLabels() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const label = document.getElementById('sidebarThemeLabel');
+      if (label) {
+        label.textContent = isDark ? '3D Dark mode' : 'Light mode';
+      }
+    }
+
+    // Welcome Voice Synthesizer
+    function playWelcomeVoice() {
+      const btn = document.getElementById('playVoiceBtn');
+      const icon = document.getElementById('voiceSpeakerIcon');
+
+      if (!('speechSynthesis' in window)) {
+        showToast('Welcome to SachinCoderX! Free batches for every student.');
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const message = new SpeechSynthesisUtterance(
+        'Welcome to SachinCoderX! Free premium batches for every student. Unlock once with your secret access code to study any batch permanently!'
+      );
+      message.rate = 1.02;
+      message.pitch = 1.05;
+
+      message.onstart = () => {
+        btn.textContent = 'Playing...';
+        icon.classList.add('text-brand-500', 'animate-bounce');
+      };
+
+      message.onend = () => {
+        btn.textContent = 'Play';
+        icon.classList.remove('text-brand-500', 'animate-bounce');
+      };
+
+      window.speechSynthesis.speak(message);
+      showToast('🔊 Playing SachinCoderX Welcome Voice...');
+    }
+
+    // Hero Banner Slide Switcher
+    const BANNER_SLIDES = [
+      {
+        tag: '2026 - 2027 SESSION',
+        title: 'JEE <span class="text-lime-400">•</span> NEET <span class="text-lime-400">•</span> BOARDS',
+        sub: 'Study Smart with SachinCoderX'
+      },
+      {
+        tag: '100% FREE STUDENT PORTAL',
+        title: 'NEEV <span class="text-lime-400">•</span> UDAAN <span class="text-lime-400">•</span> UDAY',
+        sub: 'One-Time Unlock • Permanent Free Access'
+      },
+      {
+        tag: 'AUTO-SAVE TO MY BATCHES',
+        title: 'ARJUNA <span class="text-lime-400">•</span> LAKSHAY <span class="text-lime-400">•</span> YAKEEN',
+        sub: 'Pin Your Favorite Batch to Top ❤️'
+      }
+    ];
+    let currentBannerIndex = 0;
+
+    function setBannerSlide(index) {
+      currentBannerIndex = index;
+      const slideContainer = document.getElementById('bannerSlide0');
+      const data = BANNER_SLIDES[index];
+      if (slideContainer && data) {
+        slideContainer.innerHTML = `
+          <span class="inline-block px-2.5 py-0.5 rounded-md bg-lime-400/20 border border-lime-400/40 text-lime-300 text-[10px] sm:text-xs font-extrabold tracking-widest uppercase mb-1.5">
+            ${data.tag}
+          </span>
+          <h2 class="font-display text-[15px] min-[400px]:text-lg sm:text-3xl md:text-4xl max-sm:leading-tight font-extrabold text-white tracking-wider drop-shadow">
+            ${data.title}
+          </h2>
+          <p class="text-xs sm:text-base font-bold text-[#a3e635] mt-0.5 sm:mt-1 flex items-center gap-1.5">
+            <span>${data.sub}</span>
+            <i class="fa-solid fa-bolt text-yellow-400"></i>
+          </p>
+        `;
+      }
+
+      [0, 1, 2].forEach(i => {
+        const dot = document.getElementById('dot' + i);
+        if (dot) {
+          dot.className = i === index
+            ? 'w-7 h-2 rounded-full bg-white transition-all'
+            : 'w-2 h-2 rounded-full bg-white/40 transition-all';
+        }
+      });
+    }
+
+    setInterval(() => {
+      if (document.hidden) return;
+      currentBannerIndex = (currentBannerIndex + 1) % BANNER_SLIDES.length;
+      setBannerSlide(currentBannerIndex);
+    }, 4500);
+
+    // Toast Notification Helper
+    let toastTimer = null;
+    function showToast(text) {
+      const toast = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+      toastText.textContent = text;
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderCategories();
+      renderBatches();
+    });
+  </script>
+</body>
+</html>
